@@ -44,14 +44,29 @@ def getColumnLowestSlot(playerInput):
 
 #wincheck
 def winCheck(currentPlayersTurn):
-    win = False
     #draw
     if not (board == 0).any() and win == False:
         return "Draw"
-    #win
-
-    
-
+    #horizontalwin
+    for row in range(len(board)):
+        for column in range(4):
+            if (board[row][column] == 1 and board[row][column+1] == 1 and board[row][column+2] == 1 and board[row][column+3] == 1) or (board[row][column] == 2 and board[row][column+1] == 2 and board[row][column+2] == 2 and board[row][column+3] == 2):
+                return "Win"
+    #verticalwin
+    for row in range(3):
+        for column in range(len(board)):
+            if (board[row][column] == 1 and board[row+1][column] == 1 and board[row+2][column] == 1 and board[row+3][column] == 1) or (board[row][column] == 2 and board[row+1][column] == 2 and board[row+2][column] == 2 and board[row+3][column] == 2): 
+                return "Win"
+    #diagonalwindown
+    for row in range(3):
+        for column in range(4):
+            if (board[row][column] == 1 and board[row+1][column+1] == 1 and board[row+2][column+2] == 1 and board[row+3][column+3] == 1) or (board[row][column] == 2 and board[row+1][column+1] == 2 and board[row+2][column+2] == 2 and board[row+3][column+3] == 2): 
+                return "Win"
+    #diagonalwinup
+    for row in range(3,6):
+        for column in range(4):
+            if (board[row][column] == 1 and board[row+-1][column+1] == 1 and board[row-2][column+2] == 1 and board[row-3][column+3] == 1) or (board[row][column] == 2 and board[row-1][column+1] == 2 and board[row-2][column+2] == 2 and board[row-3][column+3] == 2):
+                return "Win"
 #main
 gameIsNotWon = True
 currentPlayersTurn = 1
@@ -65,22 +80,28 @@ while gameIsNotWon:
     if currentPlayersTurn == 1:
         if ifDecider:
             board[row][playerInput-1] = "1"
-            currentPlayersTurn = 2
             clearConsole()
             displayBoard()
             if winCheck(currentPlayersTurn) == "Draw":
                 print("Game is a draw")
                 break
+            if winCheck(currentPlayersTurn) == "Win":
+                print("Player",currentPlayersTurn, "Wins")
+                break
+            currentPlayersTurn = 2
         else:
             print("You cannot move here, please try again")
     elif currentPlayersTurn == 2:
         if ifDecider:
             board[row][playerInput-1] = "2"
-            currentPlayersTurn = 1
             clearConsole()
             displayBoard()
             if winCheck(currentPlayersTurn) == "Draw":
                 print("Game is a draw")
                 break
+            if winCheck(currentPlayersTurn) == "Win":
+                print("Player",currentPlayersTurn, "Wins")
+                break
+            currentPlayersTurn = 1
         else:
             print("You cannot move here, please try again")
