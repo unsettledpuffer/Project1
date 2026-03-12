@@ -2,7 +2,19 @@
 
 import numpy as np
 import random
+import os 
 
+if os.path.exists("connect4.npz"):
+    data = np.load("connect4.npz", allow_pickle=True)
+    weights=data["weights"]
+    bias=data["bias"]
+    outputWeights=data["outputWeights"]
+    outputBias=data["outputBias"]
+else:
+    pass
+
+
+explorationRate = 0.1
 #errorchecks
 def typeCheck():
     while True:
@@ -57,7 +69,10 @@ def getAIMove():
         calculation += outputBias[x]
         outputLayer[x] = calculation
 
-    columnChoice = outputLayer.index(max(outputLayer))
+    if random.random() > explorationRate:
+        columnChoice = random.randint(0,6)
+    else:
+        columnChoice = outputLayer.index(max(outputLayer))
     memoryBoards.append(inputLayer.copy())
     memoryMoves.append(columnChoice)
     return columnChoice
@@ -179,4 +194,26 @@ elif status == "2wins":
     reward = 1
 else:
     reward = 0 
-
+learningRate = 0.01
+def learnFromGame():
+    for x in range(len(memoryMoves)):
+        boardState = memoryBoards[x]
+        move = memoryMoves[x]
+        for y in range(len(hiddenLayer)):
+            calculation = 0
+            for i in range(len(boardState)):
+                result = boardState[i] * weights[y][i]
+                calculation += result
+            calculation += bias[y]
+            hiddenLayer[y] = calculation
+    for h in range(len(hiddenLayer)):
+        outputWeights[move][h] += learningRate * reward * hiddenLayer[h]
+    outputBias[move] += learningRate * reward
+learnFromGame()
+np.savez(
+    "connect4.npz",
+    weights=weights,
+    bias=bias,
+    outputWeights=outputWeights,
+    outputBias=outputBias
+)
